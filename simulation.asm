@@ -1,20 +1,14 @@
 %include "io.inc"
 section .data
-VARN db 0 ;number of bits. for this case, n = 8 (n)
-VARM db 0 ;serves as divisor (M)
-VARMN db 0 ;serves as 2's complement of (M)
-VARQ db 0 ;serves as dividend (Q)
+VARN db 8 ;number of bits. for this case, n = 8 (n)
+VARM db 3 ;serves as divisor (M). should be same with VARMN
+VARMN db 3 ;serves as 2's complement of (M). should be same with VARM
+VARQ db 20 ;serves as dividend (Q)
 VARA db 0 ;serves as remainder. init value should be 0 (A)
 section .text
 global CMAIN
 CMAIN:
-    mov ebp, esp; for correct debugging
-    ;Operation: 7 / 4
-    mov byte [VARN], 8
-    mov byte [VARA], 0
-    mov byte [VARM], 4 ;should be same with VARMN
-    mov byte [VARMN], 4 ;should be same with VARM
-    mov byte [VARQ], 7
+    ;Get 2's complement of VARM
     not byte [VARMN]
     add byte [VARMN], 1h 
     
@@ -22,10 +16,7 @@ CMAIN:
     mov ax, [VARQ]
     
     call START
-    
-    ;NEWLINE
-    ;PRINT_STRING "Result: "
-    ;PRINT_DEC 1, ah
+
     xor eax, eax
     ret
 START:
@@ -61,8 +52,8 @@ START:
     call A_PLUS_M
     ret
 A_MINUS_M:
-    PRINT_STRING "Greater than zero"
-    NEWLINE  
+    ;PRINT_STRING "Greater than zero"
+    ;NEWLINE  
     
     PRINT_STRING "M="
     PRINT_UDEC 1, VARM
@@ -78,28 +69,28 @@ A_MINUS_M:
     NEWLINE
 
     cmp dx, 127 ;01111111 = max positive number if 8 bits. negative if 1xxxxxxx
-    jle ADD_ONE_TO_Q
+    jbe ADD_ONE_TO_Q
     call ADD_ZERO_TO_Q
     ret
 A_PLUS_M:
-    PRINT_STRING "Less than zero."
-    NEWLINE
+    ;PRINT_STRING "Less than zero."
+    ;NEWLINE
     
     mov bx, [VARM]
     add dl, bl
-    PRINT_STRING "A-M: "
+    PRINT_STRING "A+M: "
     PRINT_UDEC 1, dx
     NEWLINE
     
     cmp dx, 127 ;01111111 = max positive number if 8 bits. negative if 1xxxxxxx
-    jle ADD_ONE_TO_Q
+    jbe ADD_ONE_TO_Q
     call ADD_ZERO_TO_Q
     ret
 ADD_ZERO_TO_Q:
     PRINT_STRING "Add 0 to Q0"
     NEWLINE
     
-    add byte al, 0h
+    add byte al, 0
     PRINT_STRING "A: "
     PRINT_UDEC 1, dx
     PRINT_STRING " Q: "
@@ -110,7 +101,8 @@ ADD_ZERO_TO_Q:
     dec byte [VARN]
     
     cmp byte [VARN], 1
-    jge START
+    jae START
+    call COUNT_IS_ZERO
     ret
 ADD_ONE_TO_Q:
     PRINT_STRING "Add 1 to Q0"
@@ -127,7 +119,27 @@ ADD_ONE_TO_Q:
     dec byte [VARN] 
     
     cmp byte [VARN], 1
-    jge START
+    jae START
+    call COUNT_IS_ZERO
+    ret
+COUNT_IS_ZERO:
+    PRINT_STRING "N: "
+    PRINT_UDEC 1, VARN
+    NEWLINE
+    
+    cmp dx, 127 ;01111111 = max positive number if 8 bits. negative if 1xxxxxxx
+    jbe END
+    
+    mov bx, [VARM]
+    add dl, bl
+    call END
+    ret
+END:
+    PRINT_STRING "A: "
+    PRINT_UDEC 1, dx
+    PRINT_STRING " Q: "
+    PRINT_UDEC 1, ax
+    NEWLINE
     ret
     
     
