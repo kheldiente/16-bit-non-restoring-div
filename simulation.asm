@@ -1,16 +1,16 @@
 %include "io.inc"
 section .data
 VARN db 16 ;number of bits. for this case, n = 16 (n)
-VARM dw 40 ;serves as divisor (M). should be same with VARMN
-VARMN dw 40 ;serves as 2's complement of (M). should be same with VARM
-VARQ dw 500 ;serves as dividend (Q)
+VARM dw 36 ;serves as divisor (M). should be same with VARMN
+VARMN dw 36 ;serves as 2's complement of (M). should be same with VARM
+VARQ dw 35893 ;serves as dividend (Q)
 VARA dw 0 ;serves as remainder. init value should be 0 (A)
 section .bss
 RES1 resd 1 ;container for shift left
 section .text
 global CMAIN
 CMAIN:
-    ;Get 2's complement of VARM
+    ;Get 2's complement of VARM and assign to VARMN
     not word [VARMN]
     add word [VARMN], 1 
     
