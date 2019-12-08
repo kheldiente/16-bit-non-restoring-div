@@ -1,18 +1,21 @@
 %include "io.inc"
 section .data
 VARN db 16 ;number of bits. for this case, n = 16 (n)
-VARM dw 36 ;serves as divisor (M). should be same with VARMN
-VARMN dw 36 ;serves as 2's complement of (M). should be same with VARM
-VARQ dw 35893 ;serves as dividend (Q)
+VARM dw 600 ;serves as divisor (M)
+VARQ dw 15788 ;serves as dividend (Q)
 VARA dw 0 ;serves as remainder. init value should be 0 (A)
 section .bss
+RESMN resw 1 ;serves as 2's complement of (M)
 RES1 resd 1 ;container for shift left
 section .text
 global CMAIN
 CMAIN:
-    ;Get 2's complement of VARM and assign to VARMN
-    not word [VARMN]
-    add word [VARMN], 1 
+    mov ebp, esp; for correct debugging
+    ;Get 2's complement of VARM and assign to RESMN
+    mov bx, [VARM]
+    mov [RESMN], bx
+    not word [RESMN]
+    add word [RESMN], 1 
     
     mov dx, [VARA]
     mov ax, [VARQ]
@@ -39,7 +42,7 @@ START:
     call A_PLUS_M
     ret
 A_MINUS_M:
-    mov bx, [VARMN]
+    mov bx, [RESMN]
     add dx, bx
     
     cmp dx, 32767 ;0111111111111111 = max positive number if 16 bits. negative if 1xxxxxxxxxxxxxxx
