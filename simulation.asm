@@ -1,8 +1,8 @@
 %include "io.inc"
 section .data
 VARN db 16 ;number of bits. for this case, n = 16 (n)
-VARM dw 600 ;serves as divisor (M)
-VARQ dw 15788 ;serves as dividend (Q)
+VARM dw 1 ;serves as divisor (M)
+VARQ dw 1 ;serves as dividend (Q)
 VARA dw 0 ;serves as remainder. init value should be 0 (A)
 section .bss
 RESMN resw 1 ;serves as 2's complement of (M)
@@ -10,6 +10,11 @@ RES1 resd 1 ;container for shift left
 section .text
 global CMAIN
 CMAIN:
+    ;Get inputs separated by new line. Expected format Q / M e.g 8 / 3
+    GET_UDEC 2, [VARQ]
+    NEWLINE
+    GET_UDEC 2, [VARM]
+
     ;Get 2's complement of VARM and assign to RESMN
     mov bx, [VARM]
     mov [RESMN], bx
