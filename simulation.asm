@@ -10,7 +10,6 @@ RES1 resd 1 ;container for shift left
 section .text
 global CMAIN
 CMAIN:
-    mov ebp, esp; for correct debugging
     ;Get 2's complement of VARM and assign to RESMN
     mov bx, [VARM]
     mov [RESMN], bx
